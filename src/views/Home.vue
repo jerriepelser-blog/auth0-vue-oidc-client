@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <p v-if="isLoggedIn">User: {{ username }}</p>
+    <p v-if="isLoggedIn">User: <router-link to="/profile">{{ username }}</router-link></p>
     <button @click="login" v-if="!isLoggedIn">Login</button>
     <button @click="logout" v-if="isLoggedIn">Logout</button>
   </div>

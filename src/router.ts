@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import Profile from './views/Profile.vue'
+import AuthService from './services/AuthService';
 
 Vue.use(Router)
 
-export default new Router({
+const router =  new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -12,6 +14,14 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
+      meta: {
+        isSecure: true,
+      }
     },
     {
       path: '/about',
@@ -22,4 +32,27 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  const authService: AuthService = new AuthService();
+
+  if (to.matched.some(record => record.meta.isSecure)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    authService.isLoggedIn().then((isLoggedIn: boolean) => {
+      if (isLoggedIn) {
+        next();
+      } else {
+        next({
+          path: '/',
+          query: { redirect: to.fullPath }
+        });
+      }
+    });
+  } else {
+    next();
+  }
+});
+
+export default router;

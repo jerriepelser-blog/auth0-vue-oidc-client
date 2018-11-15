@@ -12,7 +12,7 @@ export default class AuthService {
             client_id: "dnphgXcg0zeYBOCWwnRW8Xhq8Oif9A06",
             redirect_uri: "http://localhost:8080/callback.html",
             response_type: "id_token token",
-            scope: "openid profile",
+            scope: "openid profile email",
             post_logout_redirect_uri: "http://localhost:8080/",
             filterProtocolClaims: true,
             metadata: {
@@ -37,5 +37,11 @@ export default class AuthService {
 
     public logout(): Promise<void> {
         return this.userManager.signoutRedirect();
+    }
+
+    public async isLoggedIn(): Promise<boolean> {
+        const user: User = await this.getUser();
+
+        return (user !== null && !user.expired);
     }
 }
